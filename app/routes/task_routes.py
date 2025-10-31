@@ -67,20 +67,16 @@ def delete_task(task_id):
 
     return Response(status=204, mimetype='application/json')
 
-@bp.patch('/<task_id>/mark_complete')
-def mark_task_complete(task_id):
+@bp.patch('/<task_id>/<complete_or_incomplete>')
+def mark_task_complete(task_id, complete_or_incomplete):
     task = validate_model(Task, task_id)
 
-    task.completed_at = datetime.now().date()
-    db.session.commit()
+    if complete_or_incomplete == 'mark_complete':
+        task.completed_at = datetime.now().date()
+    
+    else:
+        task.completed_at = None
 
-    return Response(status=204, mimetype='application/json')
-
-@bp.patch('/<task_id>/mark_incomplete')
-def mark_task_incomplete(task_id):
-    task = validate_model(Task, task_id)
-
-    task.completed_at = None
     db.session.commit()
 
     return Response(status=204, mimetype='application/json')
