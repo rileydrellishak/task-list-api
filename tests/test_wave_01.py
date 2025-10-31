@@ -97,8 +97,6 @@ def test_get_tasks_no_saved_tasks(client):
     assert response.status_code == 200
     assert response_body == []
 
-
-@pytest.mark.skip(reason="No way to test this feature yet")
 def test_get_tasks_one_saved_tasks(client, one_task):
     # Act
     response = client.get("/tasks")
