@@ -52,4 +52,9 @@ def update_task(task_id):
 
 @bp.delete('/<task_id>')
 def delete_task(task_id):
-    pass
+    task = validate_model(Task, task_id)
+
+    db.session.delete(task)
+    db.session.commit()
+
+    return Response(status=204, mimetype='application/json')
