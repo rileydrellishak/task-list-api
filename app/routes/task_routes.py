@@ -3,7 +3,6 @@ from app.models.task import Task
 from ..db import db
 from app.routes.route_utilities import validate_model
 from datetime import datetime
-from sqlalchemy import update
 
 bp = Blueprint('tasks_bp', __name__, url_prefix='/tasks')
 
@@ -67,15 +66,19 @@ def delete_task(task_id):
 
     return Response(status=204, mimetype='application/json')
 
-@bp.patch('/<task_id>/<complete_or_incomplete>')
-def mark_task_complete(task_id, complete_or_incomplete):
+@bp.patch('/<task_id>/mark_incomplete')
+def mark_task_complete(task_id):
     task = validate_model(Task, task_id)
+    task.completed_at = None
 
-    if complete_or_incomplete == 'mark_complete':
-        task.completed_at = datetime.now().date()
-    
-    else:
-        task.completed_at = None
+    db.session.commit()
+
+    return Response(status=204, mimetype='application/json')
+
+@bp.patch('/<task_id>/mark_complete')
+def mark_task_incomplete(task_id):
+    task = validate_model(Task, task_id)
+    task.completed_at = datetime.now().date()
 
     db.session.commit()
 
