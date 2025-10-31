@@ -1,4 +1,4 @@
-from flask import abort, Blueprint, make_response, request
+from flask import abort, Blueprint, make_response, request, Response
 from app.models.task import Task
 from ..db import db
 from app.routes.route_utilities import validate_model
@@ -41,7 +41,14 @@ def create_task():
 
 @bp.put('/<task_id>')
 def update_task(task_id):
-    pass
+    task = validate_model(Task, task_id)
+    request_body = request.get_json()
+
+    task.title = request_body['title']
+    task.description = request_body['description']
+    db.session.commit()
+
+    return Response(status=204, mimetype='application/json')
 
 @bp.delete('/<task_id>')
 def delete_task(task_id):
