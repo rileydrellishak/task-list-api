@@ -13,15 +13,18 @@ class Task(db.Model):
     def from_dict(cls, task_data):
         if not task_data['is_complete']:
             task_data['is_complete'] = None
-        new_task = Task(title=task_data['title'],
-                        description=task_data['description'],
-                        completed_at=task_data['is_complete']
-                        )
+
+        new_task = Task(
+            title=task_data['title'],
+            description=task_data['description'],
+            completed_at=task_data['is_complete']
+            )
         
         return new_task
     
     def to_dict(self):
         task_dict = {}
+        
         if self.completed_at is None:
             task_dict['is_complete'] = False
         
