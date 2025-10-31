@@ -2,14 +2,21 @@ from flask import abort, Blueprint, make_response, request, Response
 from app.models.task import Task
 from ..db import db
 from app.routes.route_utilities import validate_model
+from sqlalchemy import desc, asc
 
 bp = Blueprint('tasks_bp', __name__, url_prefix='/tasks')
 
 @bp.get('')
 def get_all_tasks():
     query = db.select(Task)
-    tasks = db.session.scalars(query)
 
+    sort_param = request.args.get('sort')
+    if sort_param == 'asc' or sort_param is None:
+        query = query.order_by(Task.title)
+    elif sort_param == 'desc':
+        query = query.order_by(Task.title.desc())
+
+    tasks = db.session.scalars(query)
     task_list = []
     for task in tasks:
         task_list.append(task.to_dict())
