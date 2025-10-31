@@ -18,7 +18,8 @@ def get_all_tasks():
 
 @bp.get('/<task_id>')
 def get_one_task_by_id(task_id):
-    pass
+    task = validate_model(Task, task_id)
+    return task.to_dict()
 
 @bp.post('')
 def create_task():
