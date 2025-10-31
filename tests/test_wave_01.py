@@ -211,7 +211,6 @@ def test_delete_task_not_found(client):
     assert response_body == {'message': 'Task 1 not found'}
     assert db.session.scalars(db.select(Task)).all() == []
 
-
 def test_create_task_must_contain_title(client):
     # Act
     response = client.post("/tasks", json={
