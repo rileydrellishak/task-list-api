@@ -3,6 +3,8 @@ from app.models.task import Task
 from ..db import db
 from app.routes.route_utilities import validate_model
 from datetime import datetime
+import os
+import requests
 
 bp = Blueprint('tasks_bp', __name__, url_prefix='/tasks')
 
@@ -67,7 +69,7 @@ def delete_task(task_id):
     return Response(status=204, mimetype='application/json')
 
 @bp.patch('/<task_id>/mark_incomplete')
-def mark_task_complete(task_id):
+def mark_task_incomplete(task_id):
     task = validate_model(Task, task_id)
     task.completed_at = None
 
@@ -76,10 +78,19 @@ def mark_task_complete(task_id):
     return Response(status=204, mimetype='application/json')
 
 @bp.patch('/<task_id>/mark_complete')
-def mark_task_incomplete(task_id):
+def mark_task_complete(task_id):
     task = validate_model(Task, task_id)
     task.completed_at = datetime.now().date()
 
     db.session.commit()
+    slack_token = os.environ["SLACK_BOT_TOKEN"]
+    channel_and_message = {
+	'channel': 'task-notifications',
+	'text': f'Someone just completed the task {task.title}'
+    }
+    headers = {
+        'Authorization': slack_token
+    }
+    requests.post('https://slack.com/api/chat.postMessage', data=channel_and_message, json=channel_and_message, headers=headers)
 
     return Response(status=204, mimetype='application/json')
