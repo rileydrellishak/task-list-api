@@ -3,7 +3,8 @@ from app.models.task import Task
 from ..db import db
 from app.routes.route_utilities import validate_model
 from datetime import datetime
-from sqlalchemy import update
+import os
+import requests
 
 bp = Blueprint('tasks_bp', __name__, url_prefix='/tasks')
 
@@ -67,16 +68,29 @@ def delete_task(task_id):
 
     return Response(status=204, mimetype='application/json')
 
-@bp.patch('/<task_id>/<complete_or_incomplete>')
-def mark_task_complete(task_id, complete_or_incomplete):
+@bp.patch('/<task_id>/mark_incomplete')
+def mark_task_incomplete(task_id):
     task = validate_model(Task, task_id)
-
-    if complete_or_incomplete == 'mark_complete':
-        task.completed_at = datetime.now().date()
-    
-    else:
-        task.completed_at = None
+    task.completed_at = None
 
     db.session.commit()
+
+    return Response(status=204, mimetype='application/json')
+
+@bp.patch('/<task_id>/mark_complete')
+def mark_task_complete(task_id):
+    task = validate_model(Task, task_id)
+    task.completed_at = datetime.now().date()
+
+    db.session.commit()
+    slack_token = os.environ["SLACK_BOT_TOKEN"]
+    channel_and_message = {
+	'channel': 'task-notifications',
+	'text': f'Someone just completed the task {task.title}'
+    }
+    headers = {
+        'Authorization': slack_token
+    }
+    requests.post('https://slack.com/api/chat.postMessage', data=channel_and_message, json=channel_and_message, headers=headers)
 
     return Response(status=204, mimetype='application/json')
