@@ -11,7 +11,10 @@ class Task(db.Model):
 
     @classmethod
     def from_dict(cls, task_data):
-        if not task_data['is_complete']:
+        if 'is_complete' not in task_data.keys():
+            task_data['is_complete'] = None
+
+        if task_data['is_complete'] is False:
             task_data['is_complete'] = None
 
         new_task = Task(
@@ -24,7 +27,7 @@ class Task(db.Model):
     
     def to_dict(self):
         task_dict = {}
-        
+
         if self.completed_at is None:
             task_dict['is_complete'] = False
         

@@ -23,7 +23,21 @@ def get_one_task_by_id(task_id):
 
 @bp.post('')
 def create_task():
-    pass
+    request_body = request.get_json()
+
+    try:
+        new_task = Task.from_dict(request_body)
+
+    except KeyError as error: # Missing keys
+        response = {'details': "Invalid data"}
+        abort(make_response(response, 400))
+    
+    db.session.add(new_task)
+    db.session.commit()
+
+    new_task_dict = new_task.to_dict()
+
+    return new_task_dict, 201
 
 @bp.put('/<task_id>')
 def update_task(task_id):
