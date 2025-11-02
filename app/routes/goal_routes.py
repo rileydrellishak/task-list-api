@@ -82,4 +82,19 @@ def send_list_of_task_ids_to_goal(goal_id):
 
     return request_body, 200
 
+@bp.get('/<goal_id>/tasks')
+def get_tasks_from_goal_id(goal_id):
+    goal = validate_model(Goal, goal_id)
 
+    query = db.select(Task).where(Task.goal_id == goal_id)
+    tasks = db.session.scalars(query)
+
+    response = goal.to_dict()
+    response['tasks'] = []
+
+    for task in tasks:
+        task_dict = task.to_dict()
+        task_dict['goal_id'] = goal.id
+        response['tasks'].append(task_dict)
+
+    return response
