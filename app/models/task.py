@@ -30,6 +30,9 @@ class Task(db.Model):
 
         if self.completed_at is None:
             task_dict['is_complete'] = False
+
+        if self.goal_id:
+            task_dict['goal_id'] = self.goal_id
         
         task_dict['id'] = self.id
         task_dict['title'] = self.title
