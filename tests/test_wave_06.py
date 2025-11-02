@@ -2,8 +2,6 @@ from app.models.goal import Goal
 from app.db import db
 import pytest
 
-
-@pytest.mark.skip(reason="No way to test this feature yet")
 def test_post_task_ids_to_goal(client, one_goal, three_tasks):
     # Act
     response = client.post("/goals/1/tasks", json={
@@ -24,8 +22,6 @@ def test_post_task_ids_to_goal(client, one_goal, three_tasks):
     query = db.select(Goal).where(Goal.id == 1)
     assert len(db.session.scalar(query).tasks) == 3
 
-
-@pytest.mark.skip(reason="No way to test this feature yet")
 def test_post_task_ids_to_goal_overwrites_existing_tasks(client, one_task_belongs_to_one_goal, three_tasks):
     # Act
     response = client.post("/goals/1/tasks", json={

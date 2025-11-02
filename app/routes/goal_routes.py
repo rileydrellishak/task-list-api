@@ -1,5 +1,6 @@
 from flask import abort, Blueprint, make_response, request, Response
 from app.models.goal import Goal
+from app.models.task import Task
 from ..db import db
 from app.routes.route_utilities import validate_model
 from datetime import datetime
@@ -63,3 +64,22 @@ def delete_goal(goal_id):
     db.session.commit()
 
     return Response(status=204, mimetype='application/json')
+
+@bp.post('/<goal_id>/tasks')
+def send_list_of_task_ids_to_goal(goal_id):
+    request_body = request.get_json()
+    goal = validate_model(Goal, goal_id)
+
+    goal.tasks = []
+
+    for task_id in request_body['task_ids']:
+        task = validate_model(Task, task_id)
+        task.goal_id = goal_id
+    
+    db.session.commit()
+
+    request_body['id'] = goal.id
+
+    return request_body, 200
+
+
