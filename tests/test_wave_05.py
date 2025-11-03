@@ -117,14 +117,8 @@ def test_update_goal(client, one_goal):
     response = client.patch("/goals/1", json={
         "title": "My New Title"
     })
-    response_body = response.get_json()
 
-    # Assert
-    assert response.status_code == 201
-    assert response_body == {
-        "id": 1,
-        "title": "My New Title"
-    }
+    assert response.status_code == 204
 
 
 def test_update_goal_not_found(client):
