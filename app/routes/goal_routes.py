@@ -28,17 +28,15 @@ def create_goal():
     return create_model(Goal, request_body)
 
 @bp.patch('/<goal_id>')
-def mark_task_incomplete(goal_id):
+def update_goal_title(goal_id):
     goal = validate_model(Goal, goal_id)
     request_body = request.get_json()
-
+    
     goal.title = request_body['title']
 
     db.session.commit()
 
-    response_body = goal.to_dict()
-
-    return response_body, 201
+    return Response(status=204, mimetype='application/json')
 
 @bp.delete('/<goal_id>')
 def delete_goal(goal_id):
