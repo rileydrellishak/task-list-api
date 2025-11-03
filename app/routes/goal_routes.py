@@ -1,11 +1,8 @@
-from flask import abort, Blueprint, make_response, request, Response
+from flask import Blueprint, request, Response
 from app.models.goal import Goal
 from app.models.task import Task
 from ..db import db
 from app.routes.route_utilities import validate_model, create_model
-from datetime import datetime
-import os
-import requests
 
 bp = Blueprint('goals_bp', __name__, url_prefix='/goals')
 
