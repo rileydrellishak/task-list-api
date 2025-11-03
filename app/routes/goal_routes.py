@@ -74,11 +74,9 @@ def get_tasks_from_goal_id(goal_id):
     tasks = db.session.scalars(query)
 
     response = goal.to_dict()
-    response['tasks'] = []
+    response['tasks'] = [task.to_dict() for task in tasks]
 
     for task in tasks:
-        task_dict = task.to_dict()
-        task_dict['goal_id'] = goal.id
-        response['tasks'].append(task_dict)
+        task['goal_id'] = goal.id
 
     return response
