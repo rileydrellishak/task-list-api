@@ -2,7 +2,7 @@ from flask import abort, Blueprint, make_response, request, Response
 from app.models.goal import Goal
 from app.models.task import Task
 from ..db import db
-from app.routes.route_utilities import validate_model
+from app.routes.route_utilities import validate_model, create_model
 from datetime import datetime
 import os
 import requests
@@ -28,20 +28,7 @@ def get_one_goal_by_id(goal_id):
 @bp.post('')
 def create_goal():
     request_body = request.get_json()
-
-    try:
-        new_goal = Goal.from_dict(request_body)
-
-    except KeyError as error: # Missing keys
-        response = {'details': "Invalid data"}
-        abort(make_response(response, 400))
-    
-    db.session.add(new_goal)
-    db.session.commit()
-
-    new_goal_dict = new_goal.to_dict()
-
-    return new_goal_dict, 201
+    return create_model(Goal, request_body)
 
 @bp.patch('/<goal_id>')
 def mark_task_incomplete(goal_id):
