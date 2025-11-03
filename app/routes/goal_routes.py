@@ -10,12 +10,8 @@ bp = Blueprint('goals_bp', __name__, url_prefix='/goals')
 def get_all_goals():
     query = db.select(Goal)
     goals = db.session.scalars(query)
-
-    response = []
-    for goal in goals:
-        response.append(goal.to_dict())
     
-    return response
+    return [goal.to_dict() for goal in goals]
 
 @bp.get('/<goal_id>')
 def get_one_goal_by_id(goal_id):
