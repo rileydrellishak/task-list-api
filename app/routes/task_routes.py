@@ -19,11 +19,7 @@ def get_all_tasks():
         query = query.order_by(Task.title.desc())
 
     tasks = db.session.scalars(query)
-    task_list = []
-    for task in tasks:
-        task_list.append(task.to_dict())
-    
-    return task_list
+    return [task.to_dict() for task in tasks]
 
 @bp.get('/<task_id>')
 def get_one_task_by_id(task_id):
