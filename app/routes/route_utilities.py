@@ -18,14 +18,15 @@ def validate_model(cls, model_id):
 
     return model
 
-def create_instance(cls, data):
-    pass
+def create_model(cls, model_data):
+    try:
+        new_model = cls.from_dict(model_data)
+    
+    except KeyError as error:
+        response = {'details': f'Invalid data'}
+        abort(make_response(response, 400))
 
-# create an instance of model_class
-# for each key, value in data_dict:
-#     if the key corresponds to a valid model attribute:
-#         set that attribute on the instance
-# handle any special-case logic (like completed_at)
-# return the instance
+    db.session.add(new_model)
+    db.session.commit()
 
-# involves dir() and __dir__ for the class definition. dir() returns a list of the object's attributes, and __dir__ within class definition lets us customize output of dir(). will save this for later wave when I make the goal model.
+    return new_model.to_dict(), 201
