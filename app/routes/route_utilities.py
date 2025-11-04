@@ -1,4 +1,4 @@
-from flask import abort, make_response
+from flask import abort, make_response, request
 from ..db import db
 
 def validate_model(cls, model_id):
@@ -30,3 +30,21 @@ def create_model(cls, model_data):
     db.session.commit()
 
     return new_model.to_dict(), 201
+
+def get_models_with_filters(cls, filters=None):
+    query = db.select(cls)
+
+    if filters:
+        for attr, value in filters.items():
+            if hasattr(cls, attr):
+                query = query.where(getattr(cls, attr).ilike(f'%{value}%'))
+
+            elif attr == 'sort':
+                if value == 'desc':
+                    query = query.order_by(cls.title.desc())
+                else:
+                    query = query.order_by(cls.title)
+    
+    models = db.session.scalars(query)
+    models_response = [model.to_dict() for model in models]
+    return models_response

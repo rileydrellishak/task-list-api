@@ -2,7 +2,7 @@ from flask import Blueprint, request, Response
 from ..models.goal import Goal
 from ..models.task import Task
 from ..db import db
-from .route_utilities import validate_model, create_model
+from .route_utilities import validate_model, create_model, get_models_with_filters
 
 bp = Blueprint('goals_bp', __name__, url_prefix='/goals')
 
@@ -13,9 +13,7 @@ def create_goal():
 
 @bp.get('')
 def get_all_goals():
-    query = db.select(Goal)
-    goals = db.session.scalars(query)
-    return [goal.to_dict() for goal in goals]
+    return get_models_with_filters(Goal, request.args)
 
 @bp.get('/<goal_id>')
 def get_goal_by_id(goal_id):
