@@ -34,9 +34,6 @@ class Task(db.Model):
 
         if self.goal_id:
             task_dict['goal_id'] = self.goal_id
-        
-        if self.goal_id:
-            task_dict['goal_id'] = self.goal_id
 
         task_dict['id'] = self.id
         task_dict['title'] = self.title
