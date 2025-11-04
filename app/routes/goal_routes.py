@@ -26,8 +26,13 @@ def get_goal_by_id(goal_id):
 def update_goal_title(goal_id):
     goal = validate_model(Goal, goal_id)
     request_body = request.get_json()
-    goal.title = request_body['title']
+    
+    for attribute, value in request_body:
+        if hasattr(goal, attribute):
+            getattr(goal, attribute) = value
+
     db.session.commit()
+
     return Response(status=204, mimetype='application/json')
 
 @bp.delete('<goal_id>')
