@@ -1,7 +1,7 @@
-from flask import abort, Blueprint, make_response, request, Response
+from flask import Blueprint, request, Response
 from app.models.task import Task
 from ..db import db
-from app.routes.route_utilities import validate_model
+from app.routes.route_utilities import validate_model, create_model
 from datetime import datetime
 import os
 import requests
@@ -19,11 +19,7 @@ def get_all_tasks():
         query = query.order_by(Task.title.desc())
 
     tasks = db.session.scalars(query)
-    task_list = []
-    for task in tasks:
-        task_list.append(task.to_dict())
-    
-    return task_list
+    return [task.to_dict() for task in tasks]
 
 @bp.get('/<task_id>')
 def get_one_task_by_id(task_id):
@@ -33,20 +29,7 @@ def get_one_task_by_id(task_id):
 @bp.post('')
 def create_task():
     request_body = request.get_json()
-
-    try:
-        new_task = Task.from_dict(request_body)
-
-    except KeyError as error: # Missing keys
-        response = {'details': "Invalid data"}
-        abort(make_response(response, 400))
-    
-    db.session.add(new_task)
-    db.session.commit()
-
-    new_task_dict = new_task.to_dict()
-
-    return new_task_dict, 201
+    return create_model(Task, request_body)
 
 @bp.put('/<task_id>')
 def update_task(task_id):
