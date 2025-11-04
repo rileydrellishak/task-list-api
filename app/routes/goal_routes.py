@@ -6,16 +6,34 @@ from .route_utilities import validate_model, create_model
 
 bp = Blueprint('goals_bp', __name__, url_prefix='/goals')
 
+@bp.post('')
+def create_goal():
+    goal_data = request.get_json()
+    return create_model(Goal, goal_data)
+
 @bp.get('')
 def get_all_goals():
     query = db.select(Goal)
     goals = db.session.scalars(query)
     return [goal.to_dict() for goal in goals]
 
-@bp.post('')
-def create_goal():
-    goal_data = request.get_json()
-    return create_model(Goal, goal_data)
+@bp.get('/<goal_id>')
+def get_goal_by_id(goal_id):
+    goal = validate_model(Goal, goal_id)
+    return goal.to_dict()
+
+@bp.patch('/<goal_id>')
+def update_goal_title(goal_id):
+    goal = validate_model(Goal, goal_id)
+    request_body = request.get_json()
+    
+    for attribute, value in request_body:
+        if hasattr(goal, attribute):
+            getattr(goal, attribute) = value
+
+    db.session.commit()
+
+    return Response(status=204, mimetype='application/json')
 
 @bp.delete('<goal_id>')
 def delete_goal(goal_id):
