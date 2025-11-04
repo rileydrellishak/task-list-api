@@ -27,9 +27,9 @@ def update_goal_title(goal_id):
     goal = validate_model(Goal, goal_id)
     request_body = request.get_json()
 
-    for attribute, value in request_body:
+    for attribute, value in request_body.items():
         if hasattr(goal, attribute):
-            goal[attribute] = value
+            goal.attribute = value
 
     db.session.commit()
 
@@ -65,4 +65,5 @@ def post_task_ids_to_goal(goal_id):
 def get_tasks_for_specific_goal(goal_id):
     goal = validate_model(Goal, goal_id)
     response = goal.to_dict()
+    response['tasks'] = [task.to_dict() for task in goal.tasks]
     return response, 200
