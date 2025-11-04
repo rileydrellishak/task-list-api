@@ -9,8 +9,8 @@ class Task(db.Model):
     title: Mapped[str]
     description: Mapped[str]
     completed_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
-    goal_id: Mapped[Optional[int]] = mapped_column(ForeignKey('goal.id'))
-    goal: Mapped[Optional['Goal']] = relationship(back_populates='tasks')
+    goal_id: Mapped[Optional[int]] = mapped_column(ForeignKey("goal.id"))
+    goal: Mapped[Optional['Goal']] = relationship(back_populates="tasks")
 
     @classmethod
     def from_dict(cls, task_data):
@@ -20,7 +20,8 @@ class Task(db.Model):
         new_task = Task(
             title=task_data['title'],
             description=task_data['description'],
-            completed_at=task_data['is_complete']
+            completed_at=task_data['is_complete'],
+            goal_id=task_data.get('goal_id', None)
             )
         
         return new_task
@@ -34,6 +35,9 @@ class Task(db.Model):
         if self.goal_id:
             task_dict['goal_id'] = self.goal_id
         
+        if self.goal_id:
+            task_dict['goal_id'] = self.goal_id
+
         task_dict['id'] = self.id
         task_dict['title'] = self.title
         task_dict['description'] = self.description
