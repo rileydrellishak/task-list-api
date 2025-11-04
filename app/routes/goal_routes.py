@@ -42,3 +42,9 @@ def post_task_ids_to_goal(goal_id):
         'task_ids': [task.id for task in goal.tasks]
     }
     return response, 200
+
+@bp.get('/<goal_id>/tasks')
+def get_tasks_for_specific_goal(goal_id):
+    goal = validate_model(Goal, goal_id)
+    response = goal.to_dict()
+    return response, 200
