@@ -33,7 +33,7 @@ def create_model(cls, model_data):
 
 def get_models_with_filters(cls, filters=None):
     query = db.select(cls)
-    
+
     if filters:
         sort_by = filters.get('sort_by', 'title')
         direction = filters.get('sort', None)
@@ -48,6 +48,9 @@ def get_models_with_filters(cls, filters=None):
                 query = query.order_by(sort_column.desc())
             else:
                 query = query.order_by(sort_column)
+    
+    else:
+        query = query.order_by(cls.title)
 
     models = db.session.scalars(query)
     models_response = [model.to_dict() for model in models]
