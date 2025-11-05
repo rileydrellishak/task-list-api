@@ -14,11 +14,27 @@ class Task(db.Model):
 
     @classmethod
     def from_dict(cls, task_data):
+        task_attr_types = {
+            'id': int,
+            'title': str,
+            'description': str,
+            'is_complete': type(datetime.now().date()),
+            'goal_id': int
+        }
+        
         if 'is_complete' not in task_data.keys() or task_data['is_complete'] is False:
             task_data['is_complete'] = None
 
-        if type(task_data['is_complete']) != datetime and task_data['is_complete'] is not None:
-            raise ValueError
+        for attr, value in task_data.items():
+
+            if attr == 'is_complete' or attr == 'completed_at':
+                if value is None:
+                    continue
+                elif type(value) is not task_attr_types[attr]:
+                    raise TypeError
+                
+            if type(value) is not task_attr_types[attr]:
+                raise TypeError
 
         new_task = Task(
             title=task_data['title'],

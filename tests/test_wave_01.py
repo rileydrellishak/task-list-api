@@ -1,6 +1,7 @@
 from app.models.task import Task
 from app.db import db
 import pytest
+from datetime import datetime
 
 def test_task_to_dict():
     #Arrange
@@ -247,6 +248,38 @@ def test_create_task_completed_at_is_not_datetime(client):
         'title': 'Read 10 pages 📖',
         'description': 'For relaxation',
         'is_complete': 'Yes'
+    })
+
+    response_body = response.get_json()
+
+    assert response.status_code == 400
+    assert "details" in response_body
+    assert response_body == {
+        "details": "Invalid data type"
+    }
+    assert db.session.scalars(db.select(Task)).all() == []
+
+def test_create_task_title_is_not_string(client):
+    response = client.post('/tasks', json={
+        'title': 1,
+        'description': 'For relaxation',
+        'is_complete': datetime.now().date()
+    })
+
+    response_body = response.get_json()
+
+    assert response.status_code == 400
+    assert "details" in response_body
+    assert response_body == {
+        "details": "Invalid data type"
+    }
+    assert db.session.scalars(db.select(Task)).all() == []
+
+def test_create_task_description_is_not_string(client):
+    response = client.post('/tasks', json={
+        'title': 'Read 10 pages 📖',
+        'description': 17,
+        'is_complete': datetime.now().date()
     })
 
     response_body = response.get_json()

@@ -26,7 +26,7 @@ def create_model(cls, model_data):
         response = {'details': f'Invalid data'}
         abort(make_response(response, 400))
 
-    except ValueError as error:
+    except TypeError as error:
         response = {'details': f'Invalid data type'}
         abort(make_response(response, 400))
 
