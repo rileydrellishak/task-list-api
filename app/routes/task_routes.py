@@ -10,7 +10,7 @@ bp = Blueprint('tasks_bp', __name__, url_prefix='/tasks')
 
 @bp.get('')
 def get_all_tasks():
-    return get_models_with_filters(Task, request.args)
+    return get_models_with_filters(Task, request.args), 200
 
 @bp.get('/<task_id>')
 def get_one_task_by_id(task_id):
