@@ -105,3 +105,11 @@ def one_task_belongs_to_one_goal(app, one_goal, one_task):
     goal = db.session.scalar(goal_query)
     goal.tasks.append(task)
     db.session.commit()
+
+@pytest.fixture
+def three_goals(app):
+    goal_1 = Goal(title='Prioritize Self Care 🧖‍♀️')
+    goal_2 = Goal(title='Perfect My Wind Down Routine 🌙')
+    goal_3 = Goal(title='Tidy Spaces, Tidy Mind 🫧')
+    db.session.add_all([goal_1, goal_2, goal_3])
+    db.session.commit()
