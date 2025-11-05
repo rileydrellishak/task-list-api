@@ -1,7 +1,7 @@
 from flask import Blueprint, request, Response
 from app.models.task import Task
 from ..db import db
-from app.routes.route_utilities import validate_model, create_model
+from app.routes.route_utilities import validate_model, create_model, get_models_with_filters
 from datetime import datetime
 import os
 import requests
@@ -10,16 +10,7 @@ bp = Blueprint('tasks_bp', __name__, url_prefix='/tasks')
 
 @bp.get('')
 def get_all_tasks():
-    query = db.select(Task)
-
-    sort_param = request.args.get('sort')
-    if sort_param == 'asc' or sort_param is None:
-        query = query.order_by(Task.title)
-    elif sort_param == 'desc':
-        query = query.order_by(Task.title.desc())
-
-    tasks = db.session.scalars(query)
-    return [task.to_dict() for task in tasks]
+    return get_models_with_filters(Task, request.args), 200
 
 @bp.get('/<task_id>')
 def get_one_task_by_id(task_id):
