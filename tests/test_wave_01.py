@@ -240,3 +240,20 @@ def test_create_task_must_contain_description(client):
         "details": "Invalid data"
     }
     assert db.session.scalars(db.select(Task)).all() == []
+
+########## Optional Enhancements - Tests for Edge Cases ##########
+def test_create_task_completed_at_is_not_datetime(client):
+    response = client.post('/tasks', json={
+        'title': 'Read 10 pages 📖',
+        'description': 'For relaxation',
+        'is_complete': 'Yes'
+    })
+
+    response_body = response.get_json()
+
+    assert response.status_code == 400
+    assert "details" in response_body
+    assert response_body == {
+        "details": "Invalid data type"
+    }
+    assert db.session.scalars(db.select(Task)).all() == []

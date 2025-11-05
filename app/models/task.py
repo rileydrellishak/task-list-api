@@ -17,6 +17,9 @@ class Task(db.Model):
         if 'is_complete' not in task_data.keys() or task_data['is_complete'] is False:
             task_data['is_complete'] = None
 
+        if type(task_data['is_complete']) != datetime and task_data['is_complete'] is not None:
+            raise ValueError
+
         new_task = Task(
             title=task_data['title'],
             description=task_data['description'],

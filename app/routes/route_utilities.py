@@ -26,6 +26,10 @@ def create_model(cls, model_data):
         response = {'details': f'Invalid data'}
         abort(make_response(response, 400))
 
+    except ValueError as error:
+        response = {'details': f'Invalid data type'}
+        abort(make_response(response, 400))
+
     db.session.add(new_model)
     db.session.commit()
 
