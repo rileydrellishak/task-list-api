@@ -33,18 +33,22 @@ def create_model(cls, model_data):
 
 def get_models_with_filters(cls, filters=None):
     query = db.select(cls)
-
-    if filters:
-        for attr, value in filters.items():
-            if hasattr(cls, attr):
-                query = query.where(getattr(cls, attr).ilike(f'%{value}%'))
-
-            elif attr == 'sort':
-                if value == 'desc':
-                    query = query.order_by(cls.title.desc())
-                else:
-                    query = query.order_by(cls.title)
     
+    if filters:
+        sort_by = filters.get('sort_by', 'title')
+        direction = filters.get('sort', None)
+
+        for attribute, value in filters.items():
+            if hasattr(cls, attribute):
+                query = query.where(getattr(cls, attribute).ilike(f"%{value}%"))
+
+        if hasattr(cls, sort_by):
+            sort_column = getattr(cls, sort_by)
+            if direction == 'desc':
+                query = query.order_by(sort_column.desc())
+            else:
+                query = query.order_by(sort_column)
+
     models = db.session.scalars(query)
     models_response = [model.to_dict() for model in models]
     return models_response
