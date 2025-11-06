@@ -3,13 +3,11 @@ from app.db import db
 import pytest
 
 def test_post_task_ids_to_goal(client, one_goal, three_tasks):
-    # Act
     response = client.post("/goals/1/tasks", json={
         "task_ids": [1, 2, 3]
     })
     response_body = response.get_json()
 
-    # Assert
     assert response.status_code == 200
     assert "id" in response_body
     assert "task_ids" in response_body
@@ -23,13 +21,11 @@ def test_post_task_ids_to_goal(client, one_goal, three_tasks):
     assert len(db.session.scalar(query).tasks) == 3
 
 def test_post_task_ids_to_goal_overwrites_existing_tasks(client, one_task_belongs_to_one_goal, three_tasks):
-    # Act
     response = client.post("/goals/1/tasks", json={
         "task_ids": [2, 4]
     })
     response_body = response.get_json()
 
-    # Assert
     assert response.status_code == 200
     assert "id" in response_body
     assert "task_ids" in response_body
@@ -41,20 +37,16 @@ def test_post_task_ids_to_goal_overwrites_existing_tasks(client, one_task_belong
     assert len(db.session.scalar(query).tasks) == 2
 
 def test_get_tasks_for_specific_goal_no_goal(client):
-    # Act
     response = client.get("/goals/1/tasks")
     response_body = response.get_json()
 
-    # Assert
     assert response.status_code == 404
     assert response_body == {'message': 'Goal 1 not found'}
 
 def test_get_tasks_for_specific_goal_no_tasks(client, one_goal):
-    # Act
     response = client.get("/goals/1/tasks")
     response_body = response.get_json()
 
-    # Assert
     assert response.status_code == 200
     assert "tasks" in response_body
     assert len(response_body["tasks"]) == 0
@@ -65,11 +57,9 @@ def test_get_tasks_for_specific_goal_no_tasks(client, one_goal):
     }
 
 def test_get_tasks_for_specific_goal(client, one_task_belongs_to_one_goal):
-    # Act
     response = client.get("/goals/1/tasks")
     response_body = response.get_json()
 
-    # Assert
     assert response.status_code == 200
     assert "tasks" in response_body
     assert len(response_body["tasks"]) == 1
