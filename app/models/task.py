@@ -29,8 +29,10 @@ class Task(db.Model):
     def to_dict(self):
         task_dict = {}
 
-        if self.completed_at is None:
+        if self.completed_at is None or self.completed_at is False:
             task_dict['is_complete'] = False
+        else:
+            task_dict['is_complete'] = True
 
         if self.goal_id:
             task_dict['goal_id'] = self.goal_id

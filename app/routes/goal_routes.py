@@ -20,14 +20,12 @@ def get_goal_by_id(goal_id):
     goal = validate_model(Goal, goal_id)
     return goal.to_dict()
 
-@bp.patch('/<goal_id>')
+@bp.put('/<goal_id>')
 def update_goal_title(goal_id):
     goal = validate_model(Goal, goal_id)
     request_body = request.get_json()
 
-    for attribute, value in request_body.items():
-        if hasattr(goal, attribute):
-            goal.attribute = value
+    goal.title = request_body['title']
 
     db.session.commit()
 
