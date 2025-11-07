@@ -60,6 +60,9 @@ def get_models_with_filters(cls, filters=None):
 
 def send_slack_message(task):
     slack_token = os.environ["SLACK_BOT_TOKEN"]
+    if not slack_token:
+        return Response(status=204, mimetype='application/json')
+    
     channel_and_message = {
 	'channel': 'task-notifications',
 	'text': f'Someone just completed the task {task.title}'
