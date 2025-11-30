@@ -8,13 +8,13 @@ class Task(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str]
     description: Mapped[str]
-    completed_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
+    completed_at: Mapped[Optional[datetime]]
     goal_id: Mapped[Optional[int]] = mapped_column(ForeignKey("goal.id"))
     goal: Mapped[Optional['Goal']] = relationship(back_populates="tasks")
 
     @classmethod
     def from_dict(cls, task_data):
-        if 'is_complete' not in task_data.keys() or task_data['is_complete'] is False:
+        if 'is_complete' not in task_data or task_data['is_complete'] is False:
             task_data['is_complete'] = None
 
         new_task = Task(
@@ -27,18 +27,10 @@ class Task(db.Model):
         return new_task
     
     def to_dict(self):
-        task_dict = {}
-
-        if self.completed_at is None or self.completed_at is False:
-            task_dict['is_complete'] = False
-        else:
-            task_dict['is_complete'] = True
-
-        if self.goal_id:
-            task_dict['goal_id'] = self.goal_id
-
-        task_dict['id'] = self.id
-        task_dict['title'] = self.title
-        task_dict['description'] = self.description
-
-        return task_dict
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'is_complete': bool(self.completed_at),
+            **({'goal_id': self.goal_id} if self.goal_id else {})
+        }
