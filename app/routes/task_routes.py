@@ -50,5 +50,6 @@ def mark_task_complete(task_id):
     task.completed_at = datetime.now().date()
 
     db.session.commit()
-
-    return send_slack_message(task)
+    send_slack_message(task)
+    
+    return Response(status=204, mimetype='application/json')
