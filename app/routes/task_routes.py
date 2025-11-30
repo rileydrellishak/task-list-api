@@ -1,7 +1,7 @@
 from flask import Blueprint, request, Response
 from app.models.task import Task
 from ..db import db
-from app.routes.route_utilities import validate_model, create_model, get_models_with_filters, send_slack_message
+from app.routes.route_utilities import validate_model, create_model, get_models_with_filters, send_slack_message, update_model
 from datetime import datetime
 
 bp = Blueprint('tasks_bp', __name__, url_prefix='/tasks')
@@ -24,12 +24,7 @@ def create_task():
 def update_task(task_id):
     task = validate_model(Task, task_id)
     request_body = request.get_json()
-
-    task.title = request_body['title']
-    task.description = request_body['description']
-    db.session.commit()
-
-    return Response(status=204, mimetype='application/json')
+    return update_model(task, request_body)
 
 @bp.delete('/<task_id>')
 def delete_task(task_id):
