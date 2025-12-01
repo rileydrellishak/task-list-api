@@ -73,3 +73,12 @@ def send_slack_message(task):
     requests.post('https://slack.com/api/chat.postMessage', data=channel_and_message, json=channel_and_message, headers=headers)
 
     return Response(status=204, mimetype='application/json')
+
+def update_model(obj, data):
+    for attr, value in data.items():
+        if hasattr(obj, attr):
+            setattr(obj, attr, value)
+    
+    db.session.commit()
+
+    return Response(status=204, mimetype='application/json')

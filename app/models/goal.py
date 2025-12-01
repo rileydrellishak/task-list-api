@@ -11,8 +11,13 @@ class Goal(db.Model):
         new_goal = cls(title=goal_data['title'])
         return new_goal
     
-    def to_dict(self):
-        return {
+    def to_dict(self, with_tasks=False):
+        goal_dict = {
             'id': self.id,
             'title': self.title
         }
+        
+        if with_tasks:
+            goal_dict['tasks'] = [task.to_dict() for task in self.tasks]
+
+        return goal_dict

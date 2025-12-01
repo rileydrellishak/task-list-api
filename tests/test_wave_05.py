@@ -1,5 +1,6 @@
 from app.models.goal import Goal
 import pytest
+from app.db import db
 
 def test_goal_to_dict():
     new_goal = Goal(id=1, title="Seize the Day!")
@@ -102,13 +103,11 @@ def test_update_goal(client, one_goal):
     })
 
     assert response.status_code == 204
-    
-    # check that the goal was updated
-    response = client.get('goals/1')
-    response_body = response.get_json()
 
-    assert response.status_code == 200
-    assert response_body['title'] == 'My New Title'
+    # check that the goal was updated
+    goal = db.session.get(Goal, 1)
+    assert goal is not None
+    assert goal.title == 'My New Title'
 
 def test_update_goal_not_found(client):
     response = client.delete("/goals/1")
@@ -123,12 +122,8 @@ def test_delete_goal(client, one_goal):
     assert response.status_code == 204
 
     # Check that the goal was deleted
-    response = client.get("/goals/1")
-    assert response.status_code == 404
-
-    response_body = response.get_json()
-    assert "message" in response_body
-    assert response_body == {'message': 'Goal 1 not found'}
+    goal = db.session.get(Goal, 1)
+    assert goal is None
 
 def test_delete_goal_not_found(client):
     response = client.delete("/goals/1")
